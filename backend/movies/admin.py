@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Movie, Genre
+from .models import Movie, Genre, GenreToArtWork, Preferences, Like
 
 
 @admin.register(Movie)
@@ -23,7 +23,35 @@ class MovieAdmin(admin.ModelAdmin):
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = (
+        'id',
+        'name',
+    )
     search_fields = ('name',)
 
 
+@admin.register(GenreToArtWork)
+class GenreToArtWorkAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'genre',
+        'movie'
+    )
+
+
+@admin.register(Preferences)
+class PreferencesAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'genre'
+    )
+
+
+@admin.register(Like)
+class LikeAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'user',
+        'movie'
+    )

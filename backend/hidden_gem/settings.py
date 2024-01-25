@@ -1,11 +1,15 @@
 from pathlib import Path
 from datetime import timedelta
+import os
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = 'django-insecure-fl29_6i-n+^+_ee^7+16hm_*8#b+zrxt9lcqe5j2($&kxk*vlh'
-
+SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = True
 
@@ -24,6 +28,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'djoser',
+    'django_filters',
     'api.apps.ApiConfig',
     'movies.apps.MoviesConfig',
     'drf_spectacular',
@@ -63,11 +68,11 @@ WSGI_APPLICATION = 'hidden_gem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'movie_matching',
-        'USER': 'postgres',
-        'PASSWORD': 'dkflnfhfcjd2001',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ['NAME'],
+        'USER': os.environ['USER'],
+        'PASSWORD': os.environ['PASSWORD'],
+        'HOST': os.environ['HOST'],
+        'PORT': os.environ['PORT'],
     }
 }
 
@@ -95,7 +100,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ]
 }
 
 SPECTACULAR_SETTINGS = {

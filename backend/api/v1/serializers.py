@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from movies.models import Movie, Genre, Like, Preferences, GenreToArtWork
 from movies.models import User
-from drf_spectacular.utils import extend_schema_serializer, OpenApiExample
+from drf_spectacular.utils import extend_schema_serializer, OpenApiExample, extend_schema_field
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class MovieSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
-    genre = GenreSerializer()
+    genre = GenreSerializer(many=True)
 
     class Meta:
         model = Movie
@@ -39,8 +39,7 @@ class MovieSerializer(serializers.ModelSerializer):
 @extend_schema_serializer( 
     examples = [
          OpenApiExample(
-            'Valid example 1',
-            summary='short summary',
+            'Пример запроса на предпочтения',
             value={
                 'genre': [1, 2, 3]
             },
@@ -82,7 +81,8 @@ class UserSerializer(serializers.ModelSerializer):
             'updated_at', 'preferences'
         )
     
-    def get_preferences(self, obj) -> list[Genre]:
+    @extend_schema_field(GenreSerializer)
+    def get_preferences(self, obj):
         data = []
         genres = Genre.objects.filter(
             genres__user=self.context.get('request').user

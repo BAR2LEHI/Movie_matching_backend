@@ -1,19 +1,23 @@
 from rest_framework import viewsets, status
-from movies.models import Movie, Genre, GenreToArtWork, Like
+from movies.models import Movie, Genre, GenreToArtWork, Like, Preferences
 from users.models import User
 from rest_framework.decorators import action
 from .serializers import MovieSerializer, GenreSerializer, UserSerializer, CreateUserSerializer, LikeSerializer, PreferencesSerializer
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiParameter, OpenApiTypes
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import MovieFilter
 
 
 @extend_schema(tags=['Movies'])
 class MovieViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Movie.objects.all().order_by('release_date')
     serializer_class = MovieSerializer
+    filter_backends = [DjangoFilterBackend, ]
+    filterset_class = MovieFilter
 
     @action(
         detail=True,
@@ -77,11 +81,7 @@ class UserViewSet(viewsets.ModelViewSet):
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             serializer = UserSerializer(request.user, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @swagger_auto_schema(auto_schema=None)
-    def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
-
+ 
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateUserSerializer
